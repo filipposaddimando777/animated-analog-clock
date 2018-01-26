@@ -1,10 +1,16 @@
 // Handle to the Snap library. This objects uses the SVG DOM element with id "clock" then draws the clock inside it
 var snap = new Snap("#clock");
 
+// Reference so we can stop the clock if we wish to
+var clockTaskIntervalId;
+
 // Clock module
 var analogClock = (function() {
 
   return {
+
+    // Flag to initialize the clock - will be set to false once the clock has run
+    initialStart: true,
 
     // Clock Properties. Change depending on size of clock.
     clockOutline: null,
@@ -19,10 +25,18 @@ var analogClock = (function() {
     minutesHand: null,
     secondsHand: null,
 
-    // time
+    // Variables to store time in hours, minutes and seconds
     hours: null,
     minutes: null,
     seconds: null,
+
+    // Get the local time
+    setLocalTime: function () {
+      var today = new Date();
+      this.hours = today.getHours();
+      this.minutes = today.getMinutes();
+      this.seconds = today.getSeconds();
+    },
 
     // Methods to get the corresponding degree value, based on values of hour, minute and second
     getHourInDegrees: function (hour, minute) {
@@ -102,16 +116,53 @@ var analogClock = (function() {
       secondsMatrix.rotate(this.getSecondInDegrees(this.second), this.clockCenter.x, this.clockCenter.y);
       this.secondsHand.transform(secondsMatrix);
     },
-    
-  }
-})();
 
-analogClock.hours = 8;
-analogClock.minutes = 30;
-analogClock.seconds = 15;
+    // This method will run every second, and make the clock hands move as needed
+    makeClockMove: function () {
+      var secondsMatrix = new Snap.Matrix();
+      var minutesMatrix = new Snap.Matrix();
+      var hoursMatrix = new Snap.Matrix();
 
+      // Update the time.
+      this.setLocalTime();
+
+      // Move the seconds hand.
+      secondsMatrix.rotate(this.getSecondInDegrees(this.seconds), this.clockCenter.x, this.clockCenter.y);
+      this.secondsHand.transform(secondsMatrix);
+
+      // After one minute has passed, move hours and minutes hands accordingly.
+      if (this.second === 0 || this.initialStart) {
+        hoursMatrix.rotate(this.getHourInDegrees(this.hours, this.minutes), this.clockCenter.x, this.clockCenter.y);
+        this.hoursHand.transform(hoursMatrix);
+        minutesMatrix.rotate(this.getMinuteInDegrees(this.minutes), this.clockCenter.x, this.clockCenter.y);
+        this.minutesHand.transform(minutesMatrix);
+      }
+
+      // Set Matrixes to null to help release some memory
+      hoursMatrix = null;
+      minutesMatrix = null;
+      secondsMatrix = null;
+
+      if(this.initialStart === true) this.initialStart = false;
+    },
+
+    // Start the clock.
+    startClock: function () {
+      clockTaskIntervalId = window.setInterval(() => {
+        this.makeClockMove();
+      }, 1000);
+    },
+
+    stopClock: function() {
+      window.clearInterval(clockTaskIntervalId);
+    }
+  };})();
+
+// Draw the parts of the clock and set initial position of clocks
 analogClock.drawOutline();
 analogClock.drawHoursDots();
 analogClock.drawClockHands();
-
 analogClock.setInitialHandsPosition();
+analogClock.startClock();
+
+// Start the clock.

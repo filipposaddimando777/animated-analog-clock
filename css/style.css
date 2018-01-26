@@ -1,9 +1,35 @@
 body {
-  background: -webkit-linear-gradient(left, rgba(252,236,252,1) 0%, rgba(251,166,225,1) 31%, rgba(255,124,216,1) 100%);
   font-family: Georgia;
+  background: -webkit-linear-gradient(top, #a90329 0%,#8f0222 44%,#6d0019 100%);
 }
 
 .clock-container{
   width: 500px;
   height: 500px;
+}
+
+.clock-controls-container {
+  width: 300px;
+  height: 70px;
+  margin: 50px;
+}
+
+#startClockBtn {
+  float: left;
+  width: 100px;
+  height: 30px;
+  font-size: 20px;
+  border-radius: 5px;
+  background: darkgrey;
+  color: black;
+}
+
+#stopClockBtn {
+  float: right;
+  width: 100px;
+  height: 30px;
+  font-size: 20px;
+  border-radius: 5px;
+  background: darkgrey;
+  color: black;
 }
