@@ -24,6 +24,20 @@ var analogClock = (function() {
     minutes: null,
     seconds: null,
 
+    // Methods to get the corresponding degree value, based on values of hour, minute and second
+    getHourInDegrees: function (hour, minute) {
+        var increment = Math.round((30 / 60) * minute);
+        return ((360 / 12) * hour) + increment;
+    },
+
+    getMinuteInDegrees: function (minute) {
+        return (360 / 60) * minute;
+    },
+
+    getSecondInDegrees: function (second) {
+        return (360 / 60) * second;
+    },
+
     // Draws the outline of the clock
     drawOutline: function () {
       this.clockOutline = snap.circle(this.clockCenter.x, this.clockCenter.y, this.radius);
@@ -48,17 +62,56 @@ var analogClock = (function() {
         }
     },
 
+    drawClockHands: function () {
+      // Minutes hand
+      this.minutesHand = snap.line(this.clockCenter.x, this.clockCenter.y, this.clockCenter.x, 35);
+      this.minutesHand.attr({
+        fill: 'red',
+        stroke: 'red',
+        strokeWidth: 3
+      });
 
+      // Hours hand
+      this.hoursHand = snap.line(this.clockCenter.x, this.clockCenter.y, this.clockCenter.x, 50);
+      this.hoursHand.attr({
+        fill: 'blue',
+        stroke: 'blue',
+        strokeWidth: 5
+      });
 
+      // Seconds hand
+      this.secondsHand = snap.line(this.clockCenter.x, this.clockCenter.y, this.clockCenter.x, 25);
+      this.secondsHand.attr({
+        fill: 'green',
+        stroke: 'green',
+        strokeWidth: 1
+      });
+    },
 
+    // Set the initial position of the hands
+    setInitialHandsPosition: function () {
+      var hoursMatrix = new Snap.Matrix();
+      hoursMatrix.rotate(this.getHourInDegrees(this.hour, this.minute), this.clockCenter.x, this.clockCenter.y);
+      this.hoursHand.transform(hoursMatrix);
 
+      var minutesMatrix = new Snap.Matrix();
+      minutesMatrix.rotate(this.getMinuteInDegrees(this.minute), this.clockCenter.x, this.clockCenter.y);
+      this.minutesHand.transform(minutesMatrix);
 
-
-
-
-
+      var secondsMatrix = new Snap.Matrix();
+      secondsMatrix.rotate(this.getSecondInDegrees(this.second), this.clockCenter.x, this.clockCenter.y);
+      this.secondsHand.transform(secondsMatrix);
+    },
+    
   }
 })();
 
+analogClock.hours = 8;
+analogClock.minutes = 30;
+analogClock.seconds = 15;
+
 analogClock.drawOutline();
 analogClock.drawHoursDots();
+analogClock.drawClockHands();
+
+analogClock.setInitialHandsPosition();
