@@ -119,6 +119,7 @@ var analogClock = (function() {
 
     // This method will run every second, and make the clock hands move as needed
     makeClockMove: function () {
+
       var secondsMatrix = new Snap.Matrix();
       var minutesMatrix = new Snap.Matrix();
       var hoursMatrix = new Snap.Matrix();
@@ -131,7 +132,7 @@ var analogClock = (function() {
       this.secondsHand.transform(secondsMatrix);
 
       // After one minute has passed, move hours and minutes hands accordingly.
-      if (this.second === 0 || this.initialStart) {
+      if (this.seconds === 0 || this.initialStart) {
         hoursMatrix.rotate(this.getHourInDegrees(this.hours, this.minutes), this.clockCenter.x, this.clockCenter.y);
         this.hoursHand.transform(hoursMatrix);
         minutesMatrix.rotate(this.getMinuteInDegrees(this.minutes), this.clockCenter.x, this.clockCenter.y);
